@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
           role-to-assume: arn:aws:iam::799637010569:role/github-actions-oidc-role-ui
           aws-region: ${{ env.AWS_REGION }}
