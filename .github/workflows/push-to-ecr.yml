@@ -1,45 +1,75 @@
-name: Build and Push to ECR
+#CI for Catalog Service
+
+name: Catalog Service CI
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
-env:
-  AWS_REGION: us-west-1
-  ECR_REPOSITORY: catalog
-
-permissions:
-  id-token: write
-  contents: write
-
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+    
+      - name: Setup Go 1.22
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.22
+      
+      - name: Install Dependencies
+        run: go mod download
+        working-directory: retail-store-sample-app-1.3.0/src/catalog
 
+      - name: Build
+        run: go build -o catalog .
+        working-directory: retail-store-sample-app-1.3.0/src/catalog
+
+  code-quality:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug OIDC Token Claims
-        run: |
-          TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r '.value')
-          echo $TOKEN | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .
-
-      - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4.1.0
+      - name: Setup Go 1.22
+        uses: actions/setup-go@v4
         with:
-          role-to-assume: arn:aws:iam::799637010569:role/github-actions-ecr-role
-          aws-region: ${{ env.AWS_REGION }}
+          go-version: 1.22
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: v1.56.2
+          working-directory: retail-store-sample-app-1.3.0/src/catalog
 
-      - name: Build, tag, and push image to ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./src/catalog
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  docker:
+    runs-on: ubuntu-latest
+    environment: Development
+
+    needs: build
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Docker
+        uses: docker/setup-buildx-action@v3
+   
+      - name: Log in to Docker hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }} 
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and push docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: retail-store-sample-app-1.3.0/src/catalog
+          file: retail-store-sample-app-1.3.0/src/catalog/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/catalog:${{ github.run_id }}
+
+        
+
