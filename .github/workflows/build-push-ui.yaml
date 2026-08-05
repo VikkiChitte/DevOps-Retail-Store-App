@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/Vikrant
     paths:
         - "src/ui/src/**"
         - ".github/workflows/build-push-ui.yaml"
@@ -52,5 +53,3 @@ jobs:
             docker build -t "$IMAGE_URI" src/ui
             docker push "$IMAGE_URI"
           done
-          
-
