@@ -10,7 +10,7 @@ on:
         - ".github/workflows/build-push-ui.yaml"
 
 permissions:
-  contents: write # Needed to push commits
+  contents: read # Needed to push commits
   id-token: write # Needed for OIDC
 
 env:
@@ -29,6 +29,9 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::799637010569:role/github-actions-oidc-role-ui3
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
 
       - name: Log in to Amazon ECR
         id: login-ecr
