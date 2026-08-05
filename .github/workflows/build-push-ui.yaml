@@ -6,7 +6,7 @@ on:
       - main
     paths:
         - "src/ui/src/**"
-        #- ".github/workflows/build-push-ui.yaml"
+        - ".github/workflows/build-push-ui.yaml"
 
 permissions:
   contents: write # Needed to push commits
