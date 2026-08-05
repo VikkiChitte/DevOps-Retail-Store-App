@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - feature/Vikrant
+      - feature/vikrant
     paths:
         - "src/ui/src/**"
         - ".github/workflows/build-push-ui.yaml"
