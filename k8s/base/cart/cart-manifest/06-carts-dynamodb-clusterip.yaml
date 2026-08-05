@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: carts-dynamodb-service
+  labels:
+    app: carts-dynamodb-service
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: carts-dynamodb
+  ports:
+    - name: tcp-dynamodb
+      port: 8000
+      targetPort: dynamodb
+      protocol: TCP

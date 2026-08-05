@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carts-dynamodb
+  labels:
+    app.kubernetes.io/name: carts-dynamodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels: 
+      app.kubernetes.io/name: carts-dynamodb
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: carts-dynamodb
+    spec:
+      containers:
+      - name: carts-dynamodb
+        image: "public.ecr.aws/aws-dynamodb-local/aws-dynamodb-local:1.25.1"
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: dynamodb
+            containerPort: 8000
+            protocol: TCP
+

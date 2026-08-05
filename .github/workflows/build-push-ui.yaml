@@ -1,0 +1,56 @@
+name: Build and Push UI Service to ECR
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+        - "src/ui/src/**"
+        - ".github/workflows/build-push-ui.yaml"
+
+permissions:
+  contents: write # Needed to push commits
+  id-token: write # Needed for OIDC
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: retail-ecr-ui-repo
+
+jobs:
+  build-and-push-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::799637010569:role/github-actions-oidc-role-ui3
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Define image tags
+        id: vars
+        run: |
+          SHA_TAG=sha-${GITHUB_SHA::7}
+          IMAGE_BASE="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}"
+          echo "IMAGE_BASE=$IMAGE_BASE" >> $GITHUB_ENV
+          echo "TAGS=latest $SHA_TAG" >> $GITHUB_ENV
+          echo "Using tags: latest, $SHA_TAG"
+          echo "latest = convenience tag for development and testing"
+          echo "$SHA_TAG = unique tag for each commit, used for production deployments"
+
+      - name: Build and push Docker image to Amazon ECR
+        run: |
+          for tag in $TAGS; do
+            IMAGE_URI="${IMAGE_BASE}:${tag}"
+            echo "Building and pushing $IMAGE_URI"
+            docker build -t "$IMAGE_URI" src/ui
+            docker push "$IMAGE_URI"
+          done
+          
+
