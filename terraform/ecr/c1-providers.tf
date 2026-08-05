@@ -8,12 +8,11 @@ terraform {
   }
   backend "s3" {
     bucket         = "otel-s3-infra-dev-us-east-1-11p5nl"
-    key            = "vpc/dev/terraform.tfstate"
+    key            = "ecr/dev/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-locks-dev-us-east-1"
   }
 }
-
 provider "aws" {
   region = var.aws_region
 }

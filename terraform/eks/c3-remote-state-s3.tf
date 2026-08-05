@@ -1,15 +1,15 @@
 data "terraform_remote_state" "vpc" {
-    backend = "s3"
+  backend = "s3"
 
-    config = {
-    bucket = "otel-s3-infra-dev-us-east-1-11p5nl"     # Name of the remote S3 bucket where the VPC state is stored
-    key    = "vpc/dev/terraform.tfstate"        # Path to the VPC tfstate file within the bucket
-    region = var.aws_region                    # Region where the S3 bucket and DynamoDB table exist
+  config = {
+    bucket = "otel-s3-infra-dev-us-east-1-11p5nl" # Name of the remote S3 bucket where the VPC state is stored
+    key    = "vpc/dev/terraform.tfstate"          # Path to the VPC tfstate file within the bucket
+    region = var.aws_region                       # Region where the S3 bucket and DynamoDB table exist
   }
 }
 
 output "vpc_id" {
-    value = data.terraform_remote_state.vpc.outputs.vpc_id
+  value = data.terraform_remote_state.vpc.outputs.vpc_id
 }
 
 output "pubic_subnet_ids" {
