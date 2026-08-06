@@ -20,6 +20,8 @@ env:
 jobs:
   build-and-push-ui:
     runs-on: ubuntu-latest
+    outputs:
+      image_base: ${{ steps.vars.outputs.image_base }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -74,25 +76,16 @@ jobs:
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::799637010569:role/github-actions-oidc-role-ui3
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Verify AWS identity
-        run: aws sts get-caller-identity
-
       - name: Update tag in k8s deployment file
         run: |
           SHA_TAG=sha-${GITHUB_SHA::7}
-          sed -i "s|image: .*|image: ${{ needs.build-and-push-ui.outputs.image_base }}:$SHA_TAG|" /k8s/base/ui/ui-manifest/03_ui_deployment.yaml
+          sed -i "s|image: .*|image: ${{ needs.build-and-push-ui.outputs.image_base }}:$SHA_TAG|" k8s/base/ui/ui-manifest/03_ui_deployment.yaml
       
       - name: Commit and push changes
         run: |
           git config --global user.name "VikkiChitte"
           git config --global user.email "vicky12chitte@gmail.com"
-          git add /k8s/base/ui/ui-manifest/03_ui_deployment.yaml
-          git commit -m "Update UI image tag to $SHA_TAG"
+          git add k8s/base/ui/ui-manifest/03_ui_deployment.yaml
+          git commit -m "Update UI image tag to $SHA_TAG" || echo "No changes to commit"
           git push origin main
 
