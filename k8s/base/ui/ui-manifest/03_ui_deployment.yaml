@@ -67,7 +67,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "public.ecr.aws/aws-containers/retail-store-sample-ui:1.2.4"
+          image: 799637010569.dkr.ecr.us-east-1.amazonaws.com/retail-ecr-ui-repo:sha-9e695af
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
