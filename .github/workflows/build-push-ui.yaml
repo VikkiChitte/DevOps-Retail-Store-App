@@ -56,3 +56,4 @@ jobs:
             docker build -t "$IMAGE_URI" src/ui
             docker push "$IMAGE_URI"
           done
+#Check
