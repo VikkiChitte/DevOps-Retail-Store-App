@@ -73,6 +73,15 @@ jobs:
         with:
           ref: main
           token: ${{ secrets.TOKEN }}
+          
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::799637010569:role/github-actions-oidc-role-ui3
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
 
       - name: Update tag in k8s deployment file
         run: |
