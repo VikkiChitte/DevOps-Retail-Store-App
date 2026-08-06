@@ -64,7 +64,7 @@ jobs:
     needs: build-and-push-ui
 
     permissions:
-      contents: read # Needed to push commits
+      contents: write # Needed to push commits
       id-token: write # Needed for OIDC
 
     steps:
