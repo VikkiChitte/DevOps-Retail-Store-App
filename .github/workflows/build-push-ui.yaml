@@ -6,7 +6,7 @@ on:
       - main
       #- feature/vikrant
     paths:
-        - "src/ui/src/**"
+        - "Code-Backup-1.3.0/retail-store-sample-app-1.3.0/src/ui/**"
         - ".github/workflows/build-push-ui.yaml"
 
 permissions:
