@@ -75,6 +75,26 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
 
+  sonarqube-scan:
+    runs-on: ubuntu-latest
+    #needs: trivy-fs-scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@master
+        with:
+          projectBaseDir: Code-Backup-1.3.0/retail-store-sample-app-1.3.0/src/ui
+          args: >
+            -Dsonar.projectKey=retail_ui
+            -Dsonar.projectName=retail_ui
+            -Dsonar.sources=.
+            -Dsonar.test.exclusions=**/target/**,**/mvnw/**
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
           
 #   build-and-push-ui:
 #     runs-on: ubuntu-latest
