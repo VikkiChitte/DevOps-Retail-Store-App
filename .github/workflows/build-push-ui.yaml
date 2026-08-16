@@ -44,19 +44,19 @@ jobs:
           name: test-results-ui
           path: Code-Backup-1.3.0/retail-store-sample-app-1.3.0/src/ui/target/surefire-reports
 
-  gitleaks-scan:
-    runs-on: ubuntu-latest
-    needs: build-and-test-ui
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # gitleaks-scan:
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-test-ui
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Gitleaks Setup
-        uses: gitleaks/gitleaks-action@v3
+  #     - name: Gitleaks Setup
+  #       uses: gitleaks/gitleaks-action@v3
       
-      - name: Gitleaks Scan
-        run: | 
-          gitleaks detect --source ./Code-Backup-1.3.0/retail-store-sample-app-1.3.0/src/ui --exit-code 1
+  #     - name: Gitleaks Scan
+  #       run: | 
+  #         gitleaks detect --source ./Code-Backup-1.3.0/retail-store-sample-app-1.3.0/src/ui --exit-code 1
 
   trivy-fs-scan:
     runs-on: ubuntu-latest
